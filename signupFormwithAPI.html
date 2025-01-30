@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login form with Countries</title>
+
+</head>
+<body style="background-color: rgb(255, 179, 98);">
+
+    <style>
+        #formId{
+				margin: auto;
+				background: white;
+				width: 450px;
+					height: 450px;
+					border-radius: 5px;
+					padding-top: 10px;
+			}
+			#tabId{
+				margin: auto;
+			}
+    </style>
+
+    <h2 style="background-color: black; color: azure; text-align: center;">Sign up Form</h2>
+    
+        <form id="formId" method="post" style="border: 3px solid rgb(16, 32, 57);">
+            <table id="tabId">
+                <tr>
+					<td>First Name :</td>
+					<td>
+						<input type="text" placeholder="Enter first name" style="margin-bottom: 5px;">
+					</td>
+				</tr>
+				<tr>
+					<td>Last Name :</td>
+					<td>
+						<input type="text" placeholder="Enter last name" style="margin-bottom: 5px;">
+					</td>
+				</tr>
+				<tr>
+					<td>Gender :</td>
+					<td>
+						<input type="radio" name="Gender">Male <input type="radio" name="Gender" style="margin-bottom: 7px;">Female
+					</td>
+				</tr>
+				<tr>
+					<td>Email :</td>
+					<td>
+						<input type="text" placeholder="Enter email" style="margin-bottom: 5px;">
+					</td>
+				</tr>
+
+                <tr>
+                    <td>Country :</td>
+                    <td>
+                    <!--<input id="countrytId" type="text" placeholder="Select the country" 
+                    style="margin-bottom: 5px;"> -->
+                    <select id="countryId" onclick="fetchStates()" style="margin-bottom: 5px;">
+                        <option value=" " style="width: max-content;">Please select country</option>
+                    </select>
+                    
+                    </td>
+                </tr>
+                <!-- select province -->
+                <tr>
+                    <td>State/Province :</td>
+                    <td>
+                    <!-- <input type="text" placeholder="Select the state/province" style="margin-bottom: 5px;"> -->
+                     <select id="provinceId" onclick="fetchCities()" style="margin-bottom: 8px;">
+                        <option value="" >Please select a state</option>
+                     </select>
+                    </td>
+                </tr>
+                  <!-- select city -->
+                <tr>
+                    <td>City :</td>
+                    <td>
+                    <!-- <input type="text" placeholder="Select the city" style="margin-bottom: 5px;"> -->
+                     <select name="" id="cityId" style="margin-bottom: 5px;">
+                        <option value="">Please select a city</option>
+                     </select>
+                    </td>
+                </tr>
+
+                <tr>
+					<td>Address :</td>
+					<td>
+						<textarea placeholder="Enter address here"></textarea>
+					</td>
+				</tr>
+				<tr>
+                    <td></td>
+                    <td>
+                        <button style="width: 90px; background-color: rgb(220, 227, 228);" >Submit</button>
+                    </td>
+                </tr>    
+                
+                <tr>
+					<td></td>
+					<td>
+						<span style="font-size: 15px">Already have an account?&nbsp;</span>
+                        <a href="LoginFormOfApi.html" style="text-decoration:none;">Login</a>
+						
+					</td>
+				</tr>
+
+                
+                    <!--Working with the API and server-->
+<script>
+    const apiKey = 'N1JJcnlaQjJwZk1rb0R0VUhxaVVTcjBjNzRiaExna2JPaUtraVlqbg=='; // Replace with your actual API key
+
+// Fetch countries on page load
+window.onload = function() {
+    fetch('https://api.countrystatecity.in/v1/countries', {
+        headers: {
+            'X-CSCAPI-KEY': apiKey
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const countrySelect = document.getElementById('countryId');
+        data.forEach(country => {
+            const option = document.createElement('option');
+            option.value = country.iso2;
+            option.textContent = country.name;
+            countrySelect.appendChild(option);
+        });
+    })
+    .catch(error => console.error('Error fetching countries:', error));
+};
+
+// Fetch states when a country is selected
+function fetchStates() {
+    const countryCode = document.getElementById('countryId').value;
+    const stateSelect = document.getElementById('provinceId');
+    const citySelect = document.getElementById('cityId');
+
+    // Clear previous states and cities
+    stateSelect.innerHTML = '<option value="">Please select a State</option>';
+    citySelect.innerHTML = '<option value="">Please select a city</option>';
+
+    if (countryCode) {
+        fetch(`https://api.countrystatecity.in/v1/countries/${countryCode}/states`, {
+            headers: {
+                'X-CSCAPI-KEY': apiKey
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(state => {
+                const option = document.createElement('option');
+                option.value = state.iso2;
+                option.textContent = state.name;
+                stateSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching states:', error));
+    }
+}
+
+// Fetch cities when a state is selected
+function fetchCities() {
+    const countryCode = document.getElementById('countryId').value;
+    const stateCode = document.getElementById('provinceId').value;
+    const citySelect = document.getElementById('cityId');
+
+    // Clear previous cities
+    citySelect.innerHTML = '<option value="">Select City</option>';
+
+    if (stateCode) {
+        fetch(`https://api.countrystatecity.in/v1/countries/${countryCode}/states/${stateCode}/cities`, {
+            headers: {
+                'X-CSCAPI-KEY': apiKey
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city.id;
+                option.textContent = city.name;
+                citySelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching cities:', error));
+    }
+}
+
+</script>
+</table>
+
+</body>
+</html>

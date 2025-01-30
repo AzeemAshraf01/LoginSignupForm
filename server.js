@@ -11,7 +11,6 @@ const app = express();
 app.use(cors());
 app.use(json()); // Parses incoming JSON requests
 
-// Mock database (Replace this with a real database in a production environment)
 const users = [
     { id: 1, email: 'engrazeemashraf@gmail.com' },
     { id: 2, email: 'mazeem.ashraf.017@gmail.com' }
